@@ -10,6 +10,7 @@ const Questions = ({ mode, questions, onComplete, setMode }) => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(30); // 30 seconds for testing
+  const [startTime, setStartTime] = useState(Date.now()); // Track when the quiz starts
 
   // Timer logic
   useEffect(() => {
@@ -48,29 +49,29 @@ const Questions = ({ mode, questions, onComplete, setMode }) => {
     setCurrentQuestion((prev) => prev + 1);
   };
 
-  const handleQuizCompletion = () => {
-    const results = {
-      mode,
-      total: questions[mode].length,
-      correct: correctAnswers,
-    };
-
-    // Pass results and userAnswers to the parent component
-    onComplete([results], userAnswers);
-  };
-
-  // const formatTime = (time) => {
-  //   const minutes = Math.floor(time / 60);
-  //   const seconds = time % 60;
-  //   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  // };
-
   const formatTime = (time) => {
     const hours = Math.floor(time / 3600); // 1 hour = 3600 seconds
     const minutes = Math.floor((time % 3600) / 60); // Minutes are the remainder after removing hours
     const seconds = time % 60; // Seconds are the remainder after removing minutes
 
-    return { hours, minutes, seconds };
+    return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+  };
+
+  const handleQuizCompletion = () => {
+    // Calculate the total time taken
+    const endTime = Date.now();
+    const totalTimeTaken = Math.floor((endTime - startTime) / 1000); // Convert milliseconds to seconds
+    const formattedTime = formatTime(totalTimeTaken);
+
+    const results = {
+      mode,
+      total: questions[mode].length,
+      correct: correctAnswers,
+      completedTime: formattedTime, // Add formatted time to results
+    };
+
+    // Pass results and userAnswers to the parent component
+    onComplete([results], userAnswers);
   };
 
   return (
@@ -84,17 +85,17 @@ const Questions = ({ mode, questions, onComplete, setMode }) => {
           {/* Display the formatted hours, minutes, and seconds */}
           <Tooltip title="Hours">
             <div className="border border-gray-300 p-3 bg-[#f3f4f5] px-4">
-              {formatTime(timeLeft).hours.toString().padStart(2, '0')}
+              {formatTime(timeLeft).split(' ')[0]}
             </div>
           </Tooltip>
           <Tooltip title="Minutes">
             <div className="border border-gray-300 p-3 bg-[#f3f4f5] px-4">
-              {formatTime(timeLeft).minutes.toString().padStart(2, '0')}
+              {formatTime(timeLeft).split(' ')[1]}
             </div>
           </Tooltip>
           <Tooltip title="Seconds">
             <div className="border border-gray-300 p-3 bg-[#f3f4f5] px-4">
-              {formatTime(timeLeft).seconds.toString().padStart(2, '0')}
+              {formatTime(timeLeft).split(' ')[2]}
             </div>
           </Tooltip>
         </div>

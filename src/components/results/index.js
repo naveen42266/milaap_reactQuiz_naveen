@@ -71,7 +71,7 @@ const Results = ({ mode, questions, results, onRestart, onNextLevel, goHome }) =
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{question.correct || "N/A"}</td>
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{question.correct === 3 ? 100 + "%" : question.correct ? question.correct * 33.3 + "%" : "0%"}</td>
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">60%</td>
-                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">0h 0m 23s</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{results[0]?.completedTime}</td>
                                     </tr>
                                 );
                             })}
